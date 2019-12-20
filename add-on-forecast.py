@@ -10,9 +10,13 @@ import pyodbc
 import tkinter as tk
 import Messages
 import math
+from tkinter import messagebox
 
 my_date = datetime.date.today()
+my_date_p7 = datetime.date.today() + datetime.timedelta(days=7)
+
 year, week, day = my_date.isocalendar()
+year_p7, week_p7, day_p7 = my_date_p7.isocalendar()
 
 def yes(msg_yes):
     root = tk.Tk()
@@ -104,24 +108,39 @@ def boblive_addons(countries, frame):
         LEFT JOIN dimensions.subscription_dimension as sd on fk_subscription = sk_subscription
         LEFT JOIN dimensions.product_dimension as pd on fk_product = sk_product
         WHERE addsc.country = "''' + c +
-        '''" AND (addsc.week = CONCAT( CAST(YEAR(CURRENT_TIMESTAMP()) AS VARCHAR(10)),
+        '''" AND (addsc.week = CONCAT(CAST(YEAR(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 1 WEEK)) AS VARCHAR(10)),
                     '-W',
-                    CAST(WEEK(CURRENT_TIMESTAMP())+1 AS VARCHAR(10)))
-        OR (addsc.week = CONCAT( CAST(YEAR(CURRENT_TIMESTAMP()) AS VARCHAR(10)),
-                        '-W',
-                        CAST(WEEK(CURRENT_TIMESTAMP()) AS VARCHAR(10)))
+                    CASE
+                      WHEN CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 1 WEEK)) AS INT) < 10 THEN CONCAT('0',CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 1 WEEK)) AS VARCHAR(10)))
+                      ELSE CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 1 WEEK)) AS VARCHAR(10))
+                    END)
+        OR (addsc.week = CONCAT(CAST(YEAR(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 0 WEEK)) AS VARCHAR(10)),
+                    '-W',
+                    CASE
+                      WHEN CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 0 WEEK)) AS INT) < 10 THEN CONCAT('0',CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 0 WEEK)) AS VARCHAR(10)))
+                      ELSE CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 0 WEEK)) AS VARCHAR(10))
+                    END)
         AND DAYOFYEAR(FROM_UNIXTIME(addsc.event_unix_timestamp))  < (DAYOFYEAR(CURRENT_TIMESTAMP()) - 7))
-        OR (addsc.week = CONCAT( CAST(YEAR(CURRENT_TIMESTAMP()) AS VARCHAR(10)),
-                        '-W',
-                        CAST(WEEK(CURRENT_TIMESTAMP())-1 AS VARCHAR(10)))
+        OR (addsc.week = CONCAT(CAST(YEAR(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -1 WEEK)) AS VARCHAR(10)),
+                    '-W',
+                    CASE
+                      WHEN CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -1 WEEK)) AS INT) < 10 THEN CONCAT('0',CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -1 WEEK)) AS VARCHAR(10)))
+                      ELSE CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -1 WEEK)) AS VARCHAR(10))
+                    END)
         AND DAYOFYEAR(FROM_UNIXTIME(addsc.event_unix_timestamp))  < (DAYOFYEAR(CURRENT_TIMESTAMP()) - 14))
-        OR (addsc.week = CONCAT( CAST(YEAR(CURRENT_TIMESTAMP()) AS VARCHAR(10)),
-                        '-W',
-                        CAST(WEEK(CURRENT_TIMESTAMP())-2 AS VARCHAR(10)))
+        OR (addsc.week = CONCAT(CAST(YEAR(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -2 WEEK)) AS VARCHAR(10)),
+                    '-W',
+                    CASE
+                      WHEN CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -2 WEEK)) AS INT) < 10 THEN CONCAT('0',CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -2 WEEK)) AS VARCHAR(10)))
+                      ELSE CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -2 WEEK)) AS VARCHAR(10))
+                    END)
         AND DAYOFYEAR(FROM_UNIXTIME(addsc.event_unix_timestamp))  < (DAYOFYEAR(CURRENT_TIMESTAMP()) - 21))
-        OR (addsc.week = CONCAT( CAST(YEAR(CURRENT_TIMESTAMP()) AS VARCHAR(10)),
-                        '-W',
-                        CAST(WEEK(CURRENT_TIMESTAMP())-3 AS VARCHAR(10)))
+        OR (addsc.week = CONCAT(CAST(YEAR(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -3 WEEK)) AS VARCHAR(10)),
+                    '-W',
+                    CASE
+                      WHEN CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -3 WEEK)) AS INT) < 10 THEN CONCAT('0',CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -3 WEEK)) AS VARCHAR(10)))
+                      ELSE CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -3 WEEK)) AS VARCHAR(10))
+                    END)
         AND DAYOFYEAR(FROM_UNIXTIME(addsc.event_unix_timestamp))  < (DAYOFYEAR(CURRENT_TIMESTAMP()) - 28)))
         GROUP BY addsc.country, addsc.week, subscription_id, pd.product_sku, qpc.index, qpc.quantity),
 
@@ -133,25 +152,39 @@ def boblive_addons(countries, frame):
         LEFT JOIN dimensions.product_dimension as pd on fk_product = sk_product
         WHERE addsc.country = "''' + c +
 
-        '''" AND (addsc.week = CONCAT( CAST(YEAR(CURRENT_TIMESTAMP()) AS VARCHAR(10)),
-                            '-W',
-                            CAST(WEEK(CURRENT_TIMESTAMP())+1 AS VARCHAR(10)))
-
-        OR (addsc.week = CONCAT( CAST(YEAR(CURRENT_TIMESTAMP()) AS VARCHAR(10)),
-                            '-W',
-                            CAST(WEEK(CURRENT_TIMESTAMP()) AS VARCHAR(10)))
+        '''" AND (addsc.week = CONCAT(CAST(YEAR(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 1 WEEK)) AS VARCHAR(10)),
+                    '-W',
+                    CASE
+                      WHEN CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 1 WEEK)) AS INT) < 10 THEN CONCAT('0',CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 1 WEEK)) AS VARCHAR(10)))
+                      ELSE CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 1 WEEK)) AS VARCHAR(10))
+                    END)
+        OR (addsc.week = CONCAT(CAST(YEAR(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 0 WEEK)) AS VARCHAR(10)),
+                    '-W',
+                    CASE
+                      WHEN CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 0 WEEK)) AS INT) < 10 THEN CONCAT('0',CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 0 WEEK)) AS VARCHAR(10)))
+                      ELSE CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 0 WEEK)) AS VARCHAR(10))
+                    END)
         AND DAYOFYEAR(FROM_UNIXTIME(addsc.event_unix_timestamp))  < (DAYOFYEAR(CURRENT_TIMESTAMP()) - 7))
-        OR (addsc.week = CONCAT( CAST(YEAR(CURRENT_TIMESTAMP()) AS VARCHAR(10)),
-                            '-W',
-                            CAST(WEEK(CURRENT_TIMESTAMP())-1 AS VARCHAR(10)))
+        OR (addsc.week = CONCAT(CAST(YEAR(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -1 WEEK)) AS VARCHAR(10)),
+                    '-W',
+                    CASE
+                      WHEN CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -1 WEEK)) AS INT) < 10 THEN CONCAT('0',CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -1 WEEK)) AS VARCHAR(10)))
+                      ELSE CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -1 WEEK)) AS VARCHAR(10))
+                    END)
         AND DAYOFYEAR(FROM_UNIXTIME(addsc.event_unix_timestamp))  < (DAYOFYEAR(CURRENT_TIMESTAMP()) - 14))
-        OR (addsc.week = CONCAT( CAST(YEAR(CURRENT_TIMESTAMP()) AS VARCHAR(10)),
-                            '-W',
-                            CAST(WEEK(CURRENT_TIMESTAMP())-2 AS VARCHAR(10)))
+        OR (addsc.week = CONCAT(CAST(YEAR(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -2 WEEK)) AS VARCHAR(10)),
+                    '-W',
+                    CASE
+                      WHEN CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -2 WEEK)) AS INT) < 10 THEN CONCAT('0',CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -2 WEEK)) AS VARCHAR(10)))
+                      ELSE CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -2 WEEK)) AS VARCHAR(10))
+                    END)
         AND DAYOFYEAR(FROM_UNIXTIME(addsc.event_unix_timestamp))  < (DAYOFYEAR(CURRENT_TIMESTAMP()) - 21))
-        OR (addsc.week = CONCAT( CAST(YEAR(CURRENT_TIMESTAMP()) AS VARCHAR(10)),
-                            '-W',
-                            CAST(WEEK(CURRENT_TIMESTAMP())-3 AS VARCHAR(10)))
+        OR (addsc.week = CONCAT(CAST(YEAR(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -3 WEEK)) AS VARCHAR(10)),
+                    '-W',
+                    CASE
+                      WHEN CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -3 WEEK)) AS INT) < 10 THEN CONCAT('0',CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -3 WEEK)) AS VARCHAR(10)))
+                      ELSE CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -3 WEEK)) AS VARCHAR(10))
+                    END)
         AND DAYOFYEAR(FROM_UNIXTIME(addsc.event_unix_timestamp))  < (DAYOFYEAR(CURRENT_TIMESTAMP()) - 28)))
 
         GROUP BY addsc.country, addsc.week, subscription_id, pd.product_sku)
@@ -360,18 +393,30 @@ def addon_actuals():
     WHERE kd.day_id = "ZO_T-0_AC"
     AND kd.product_family <> "Mealbox"
     AND kd.product_family <> "mealbox"
-    AND (kd.week_hf = CONCAT( CAST(YEAR(CURRENT_TIMESTAMP()) AS VARCHAR(10)),
-                        '-W',
-                        CAST(WEEK(CURRENT_TIMESTAMP()) AS VARCHAR(10)))
-    OR kd.week_hf = CONCAT( CAST(YEAR(CURRENT_TIMESTAMP()) AS VARCHAR(10)),
-                        '-W',
-                        CAST(WEEK(CURRENT_TIMESTAMP())-1 AS VARCHAR(10)))
-    OR kd.week_hf = CONCAT( CAST(YEAR(CURRENT_TIMESTAMP()) AS VARCHAR(10)),
-                        '-W',
-                        CAST(WEEK(CURRENT_TIMESTAMP())-2 AS VARCHAR(10)))
-    OR kd.week_hf = CONCAT( CAST(YEAR(CURRENT_TIMESTAMP()) AS VARCHAR(10)),
-                        '-W',
-                        CAST(WEEK(CURRENT_TIMESTAMP())-3 AS VARCHAR(10))))''', conn_dwh)
+    AND (kd.week_hf = CONCAT(CAST(YEAR(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 0 WEEK)) AS VARCHAR(10)),
+                    '-W',
+                    CASE
+                      WHEN CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 0 WEEK)) AS INT) < 10 THEN CONCAT('0',CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 0 WEEK)) AS VARCHAR(10)))
+                      ELSE CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 0 WEEK)) AS VARCHAR(10))
+                    END)
+    OR kd.week_hf = CONCAT(CAST(YEAR(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -1 WEEK)) AS VARCHAR(10)),
+                    '-W',
+                    CASE
+                      WHEN CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -1 WEEK)) AS INT) < 10 THEN CONCAT('0',CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -1 WEEK)) AS VARCHAR(10)))
+                      ELSE CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -1 WEEK)) AS VARCHAR(10))
+                    END)
+    OR kd.week_hf = CONCAT(CAST(YEAR(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -2 WEEK)) AS VARCHAR(10)),
+                    '-W',
+                    CASE
+                      WHEN CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -2 WEEK)) AS INT) < 10 THEN CONCAT('0',CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -2 WEEK)) AS VARCHAR(10)))
+                      ELSE CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -2 WEEK)) AS VARCHAR(10))
+                    END)
+    OR kd.week_hf = CONCAT(CAST(YEAR(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -3 WEEK)) AS VARCHAR(10)),
+                    '-W',
+                    CASE
+                      WHEN CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -3 WEEK)) AS INT) < 10 THEN CONCAT('0',CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -3 WEEK)) AS VARCHAR(10)))
+                      ELSE CAST(WEEK(DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -3 WEEK)) AS VARCHAR(10))
+                    END))''', conn_dwh)
     
     addon_actuals = pd.DataFrame(query, columns=['week_hf', 'country', 'region', 'day_name', 'product_family', 'mealsize', 'meal_number', 'meal_to_deliver_incl'])
     print("The latest actuals from the DWH are collected.")
@@ -476,9 +521,13 @@ msg_no = "The code will stop running."
 #compare boblive with actuals of past 4 weeks
 
 def combine_boblive_with_actuals(boblive_addons,addon_actuals_week, yes, no):
+    if week_p7 < 10:
+        week_fc = "0" + str(week_p7)
+    else:
+        week_fc = week_p7
 
     #filter on actuals before current week
-    past_boblive = boblive_addons[boblive_addons['week'] != (str(year) + '-W' + str(week + 1))]
+    past_boblive = boblive_addons[boblive_addons['week'] != (str(year_p7) + '-W' + str(week_fc))]
     count_past_boblive = past_boblive['week'].count()
 
     #merge boblive history with actuals
@@ -516,8 +565,13 @@ msg_no = "The code will stop running."
 #calculate forecast for the upcoming week
 
 def forecast(boblive_actuals, boblive_addons, addon_day_distribution, yes, no):  
+    if week_p7 < 10:
+        week_fc = "0" + str(week_p7)
+    else:
+        week_fc = week_p7
+
     #filter the current boblive data
-    current_boblive = boblive_addons[boblive_addons['week'] == (str(year) + '-W' + str(week + 1))]
+    current_boblive = boblive_addons[boblive_addons['week'] == (str(year_p7) + '-W' + str(week_fc))]
 
     #calculate forecasted addons
     forecast = pd.merge(current_boblive, boblive_actuals, how = 'left', left_on = ['country', 'region', 'default', 'persons', 'days','type'], right_on = ['country', 'region', 'meal_number', 'persons', 'days', 'type'])
@@ -534,7 +588,7 @@ def forecast(boblive_actuals, boblive_addons, addon_day_distribution, yes, no):
     #replace empty values with 0 and fill in correct weeknumber for empty values (empty values are not yet found in Bob)
     forecast['forecasted_addons'] = np.where(forecast['forecasted_addons'].isnull() == True, 0, forecast['forecasted_addons'])
 
-    forecast['week'] = np.where(forecast['week'].isnull() == True, str(year) + '-W' + str(week + 1), forecast['week'])
+    forecast['week'] = np.where(forecast['week'].isnull() == True, str(year_p7) + '-W' + str(week_fc), forecast['week'])
 
     sum_forecasted_addons_day = forecast['forecasted_addons'].sum()
 
@@ -597,7 +651,7 @@ msg_no = "The code will stop running."
 
 #check lower and higher limits
 
-def check_limits(forecast_info, lower_limit, higher_limit, path_fc, year, week, day, yes, no):
+def check_limits(forecast_info, lower_limit, higher_limit, path_fc, yes, no):
     #compare the forecast with the higher and lower limits
     forecast_info = forecast_info.groupby(['week','country', 'region', 'product_family', 'size', 'meal_number', 'total_bob', 'growth rate'], as_index = False)['meals_to_deliver'].sum()
     check_forecast = pd.merge(forecast_info, lower_limit, how = 'left', left_on = ['country', 'region', 'product_family','size', 'meal_number'], right_on = ['country', 'region', 'product_family', 'mealsize', 'meal_number'])
@@ -606,13 +660,18 @@ def check_limits(forecast_info, lower_limit, higher_limit, path_fc, year, week, 
     check_forecast['check_higher'] = np.where(check_forecast['meals_to_deliver'] > check_forecast['higher_limit'], "BAD", "GOOD")
     check_forecast = check_forecast[['week','country', 'region', 'product_family','size', 'meal_number','total_bob', 'growth rate','meals_to_deliver', 'lower_limit', 'higher_limit', 'check_lower', 'check_higher']]
 
+    if week_p7 < 10:
+        week_fc = "0" + str(week_p7)
+    else:
+        week_fc = week_p7
+
     #export check for comparison
     if not os.path.exists(path_fc):
         messagebox.showinfo("Error message", "The forecast path does not exist. The code will stop running.")
         sys.exit()
 
     else:
-        check_forecast.to_csv('' + path_fc + str(year) + '-W' + str(week + 1) + '/01. WEEKLY FORECAST/01. ADD_ONS/day_' + str(day) + '_check_lower_higher_limits.csv', sep = ';', encoding = 'utf-8-sig' ,
+        check_forecast.to_csv('' + path_fc + str(year_p7) + '-W' + str(week_fc) + '/01. WEEKLY FORECAST/01. ADD_ONS/day_' + str(day) + '_check_lower_higher_limits.csv', sep = ';', encoding = 'utf-8-sig' ,
                          index = None) 
         path_fc = os.path
         print ('The csv file with the lower and higher limit checks is uploaded.')
@@ -638,17 +697,24 @@ def check_limits(forecast_info, lower_limit, higher_limit, path_fc, year, week, 
 
     return check_forecast
 
-check_limits = check_limits(forecast_info, lower_limit, higher_limit, path_fc, year, week, day, yes, no)
+check_limits = check_limits(forecast_info, lower_limit, higher_limit, path_fc, yes, no)
 
-def export_forecast(forecast, path_fc, year, week, day):
+def export_forecast(forecast, path_fc):
+    if week_p7 < 10:
+        week_fc = "0" + str(week_p7)
+    else:
+        week_fc = week_p7
+
     if not os.path.exists(path_fc):
         messagebox.showinfo("Error message", "The forecast path does not exist. The code will stop running.")
         sys.exit()
 
     else:
-        forecast.to_csv('' + path_fc + str(year) + '-W' + str(week + 1) + '/01. WEEKLY FORECAST/01. ADD_ONS/day_' + str(day) + '_addon_forecast.csv', sep = ';', encoding = 'utf-8-sig' ,
+        forecast.to_csv('' + path_fc + str(year_p7) + '-W' + str(week_fc) + '/01. WEEKLY FORECAST/01. ADD_ONS/day_' + str(day) + '_addon_forecast.csv', sep = ';', encoding = 'utf-8-sig' ,
                          index = None) 
         path_fc = os.path
         print ('The csv files with the addon forecast has been uploaded.')
-
-export_forecast = export_forecast(forecast, path_fc, year, week, day)
+        messagebox.showinfo("Done", "Finished King.")
+        sys.exit()
+        
+export_forecast = export_forecast(forecast, path_fc)
